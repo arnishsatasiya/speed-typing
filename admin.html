@@ -202,7 +202,7 @@
         };
 
         function loadTournaments() {
-            fetch('http://localhost:3000/api/tournaments')
+            fetch('/api/tournaments')
                 .then(response => response.json())
                 .then(tournaments => {
                     const select = document.getElementById('tournament-name');
@@ -225,7 +225,7 @@
                 return;
             }
 
-            fetch(`http://localhost:3000/api/tournament-results/${tournamentName}`)
+            fetch(`/api/tournament-results/${tournamentName}`)
                 .then(response => response.json())
                 .then(data => {
                     const leaderboardTable = document.getElementById('admin-leaderboard-table');
