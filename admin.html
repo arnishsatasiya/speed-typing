@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speed Typing Test - Admin Panel</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .admin-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .admin-title {
+            color: #00ff88;
+            font-size: 2rem;
+        }
+
+        .tournament-search {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .tournament-search input {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 5px;
+            background: #2a2a2a;
+            color: #ffffff;
+            font-size: 1rem;
+        }
+
+        .tournament-search button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            background: #00ff88;
+            color: #1a1a1a;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tournament-search button:hover {
+            background: #00cc6a;
+            transform: translateY(-2px);
+        }
+
+        .admin-leaderboard {
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .admin-leaderboard h2 {
+            color: #00ff88;
+            margin-bottom: 1.5rem;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .admin-table th,
+        .admin-table td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid #3a3a3a;
+            font-size: 0.95rem;
+        }
+
+        .admin-table th {
+            color: #00ff88;
+            font-weight: bold;
+        }
+
+        .admin-table tr:hover {
+            background: #3a3a3a;
+        }
+
+        .no-results {
+            text-align: center;
+            color: #888;
+            padding: 2rem;
+        }
+
+        .back-button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            background: #2a2a2a;
+            color: #ffffff;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-button:hover {
+            background: #3a3a3a;
+            transform: translateY(-2px);
+        }
+
+        .tournament-select {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 5px;
+            background: #2a2a2a;
+            color: #ffffff;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .tournament-select option {
+            background: #2a2a2a;
+            color: #ffffff;
+        }
+
+        .tournament-select:focus {
+            outline: 2px solid #00ff88;
+        }
+
+        .tournament-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: #2a2a2a;
+            padding: 1.5rem;
+            border-radius: 5px;
+            text-align: center;
+            min-width: 250px;
+        }
+
+        .stat-card h3 {
+            color: #00ff88;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .stat-card p {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        @media (max-width: 1200px) {
+            .tournament-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .tournament-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1 class="admin-title">Admin Panel</h1>
+            <a href="index.html" class="back-button">Back to Test</a>
+        </div>
+
+        <div class="tournament-search">
+            <select id="tournament-name" class="tournament-select" onchange="searchTournament()">
+                <option value="">Select Tournament</option>
+            </select>
+            <button onclick="searchTournament()">Search Tournament</button>
+        </div>
+
+        <div id="tournament-stats" class="tournament-stats"></div>
+
+        <div id="admin-leaderboard" class="admin-leaderboard">
+            <h2>Tournament Leaderboard</h2>
+            <div id="admin-leaderboard-table"></div>
+        </div>
+    </div>
+
+    <script>
+        // Load available tournaments when page loads
+        window.onload = function() {
+            loadTournaments();
+        };
+
+        function loadTournaments() {
+            fetch('http://localhost:3000/api/tournaments')
+                .then(response => response.json())
+                .then(tournaments => {
+                    const select = document.getElementById('tournament-name');
+                    tournaments.forEach(tournament => {
+                        const option = document.createElement('option');
+                        option.value = tournament;
+                        option.textContent = tournament;
+                        select.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading tournaments:', error);
+                });
+        }
+
+        function searchTournament() {
+            const tournamentName = document.getElementById('tournament-name').value.trim();
+            if (!tournamentName) {
+                alert('Please select a tournament');
+                return;
+            }
+
+            fetch(`http://localhost:3000/api/tournament-results/${tournamentName}`)
+                .then(response => response.json())
+                .then(data => {
+                    const leaderboardTable = document.getElementById('admin-leaderboard-table');
+                    const statsContainer = document.getElementById('tournament-stats');
+                    
+                    if (!data || data.length === 0) {
+                        leaderboardTable.innerHTML = '<p class="no-results">No results found for this tournament.</p>';
+                        statsContainer.innerHTML = '';
+                        return;
+                    }
+
+                    // Calculate tournament statistics
+                    const totalParticipants = data.length;
+                    const avgWPM = Math.round(data.reduce((sum, row) => sum + row[2], 0) / totalParticipants);
+                    const bestWPM = Math.max(...data.map(row => row[2]));
+                    const avgAccuracy = Math.round(data.reduce((sum, row) => sum + parseFloat(row[4]), 0) / totalParticipants);
+
+                    // Display statistics
+                    statsContainer.innerHTML = `
+                        <div class="stat-card">
+                            <h3>Total Participants</h3>
+                            <p>${totalParticipants}</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Average WPM</h3>
+                            <p>${avgWPM}</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Best WPM</h3>
+                            <p>${bestWPM}</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Average Accuracy</h3>
+                            <p>${avgAccuracy}%</p>
+                        </div>
+                    `;
+
+                    // Sort data by multiple metrics
+                    const sortedData = data.sort((a, b) => {
+                        // First compare by WPM
+                        if (b[2] !== a[2]) {
+                            return b[2] - a[2];
+                        }
+                        // If WPM is equal, compare by CPM
+                        if (b[3] !== a[3]) {
+                            return b[3] - a[3];
+                        }
+                        // If CPM is equal, compare by Accuracy (higher is better)
+                        if (parseFloat(b[4]) !== parseFloat(a[4])) {
+                            return parseFloat(b[4]) - parseFloat(a[4]);
+                        }
+                        // If Accuracy is equal, compare by Errors (lower is better)
+                        return a[5] - b[5];
+                    });
+
+                    // Create leaderboard table
+                    let tableHTML = `
+                        <table class="admin-table">
+                            <tr>
+                                <th>Rank</th>
+                                <th>User ID</th>
+                                <th>WPM</th>
+                                <th>CPM</th>
+                                <th>Accuracy</th>
+                                <th>Errors</th>
+                                <th>Date</th>
+                            </tr>
+                    `;
+
+                    // Track current rank and handle ties
+                    let currentRank = 1;
+                    let currentWPM = sortedData[0][2];
+                    let currentCPM = sortedData[0][3];
+                    let currentAccuracy = parseFloat(sortedData[0][4]);
+                    let currentErrors = sortedData[0][5];
+                    let skipCount = 0;
+
+                    sortedData.forEach((row, index) => {
+                        // Check if this is a different score than the previous row
+                        if (index > 0 && (
+                            row[2] !== currentWPM ||
+                            row[3] !== currentCPM ||
+                            parseFloat(row[4]) !== currentAccuracy ||
+                            row[5] !== currentErrors
+                        )) {
+                            currentRank = index + 1;
+                            currentWPM = row[2];
+                            currentCPM = row[3];
+                            currentAccuracy = parseFloat(row[4]);
+                            currentErrors = row[5];
+                        }
+
+                        tableHTML += `
+                            <tr>
+                                <td>${currentRank}</td>
+                                <td>${row[0]}</td>
+                                <td>${row[2]}</td>
+                                <td>${row[3]}</td>
+                                <td>${row[4]}</td>
+                                <td>${row[5]}</td>
+                                <td>${row[6]}</td>
+                            </tr>
+                        `;
+                    });
+
+                    tableHTML += '</table>';
+                    leaderboardTable.innerHTML = tableHTML;
+                })
+                .catch(error => {
+                    console.error('Error fetching results:', error);
+                    document.getElementById('admin-leaderboard-table').innerHTML = 
+                        '<p class="no-results">Error loading results. Please try again.</p>';
+                });
+        }
+
+        // Allow Enter key to trigger search
+        document.getElementById('tournament-name').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchTournament();
+            }
+        });
+    </script>
+</body>
+</html> 

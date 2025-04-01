@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speed Typing Test</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Admin Panel Link -->
+        <div class="admin-link">
+            <a href="admin.html" class="admin-button">Admin Panel</a>
+        </div>
+
+        <!-- Login Section -->
+        <div id="login-section" class="section active">
+            <h1>Speed Typing Test</h1>
+            <div class="login-form">
+                <input type="text" id="user-id" placeholder="Enter User ID" required>
+                <input type="text" id="tournament-name" placeholder="Enter Tournament Name" required>
+                <button onclick="startTest()">Start Test</button>
+            </div>
+        </div>
+
+        <!-- Typing Section -->
+        <div id="typing-section" class="section">
+            <div class="metrics">
+                <div class="metric">
+                    <span>WPM</span>
+                    <span id="wpm">0</span>
+                </div>
+                <div class="metric">
+                    <span>CPM</span>
+                    <span id="cpm">0</span>
+                </div>
+                <div class="metric">
+                    <span>Accuracy</span>
+                    <span id="accuracy">100%</span>
+                </div>
+                <div class="metric">
+                    <span>Errors</span>
+                    <span id="errors">0</span>
+                </div>
+                <div class="metric">
+                    <span>Time</span>
+                    <span id="time">60</span>
+                </div>
+            </div>
+            <div class="typing-area">
+                <div id="text-display" class="text-display"></div>
+                <textarea id="text-input" class="text-input" placeholder="Start typing here..." disabled></textarea>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results-section" class="section">
+            <h2>Test Results</h2>
+            <div class="results-metrics">
+                <div class="result-metric">
+                    <span>Final WPM</span>
+                    <span id="final-wpm">0</span>
+                </div>
+                <div class="result-metric">
+                    <span>Final CPM</span>
+                    <span id="final-cpm">0</span>
+                </div>
+                <div class="result-metric">
+                    <span>Final Accuracy</span>
+                    <span id="final-accuracy">0%</span>
+                </div>
+                <div class="result-metric">
+                    <span>Total Errors</span>
+                    <span id="final-errors">0</span>
+                </div>
+            </div>
+            <button onclick="showLeaderboard()">View Leaderboard</button>
+            <button onclick="restartTest()">Try Again</button>
+        </div>
+
+        <!-- Leaderboard Section -->
+        <div id="leaderboard-section" class="section">
+            <h2>Tournament Leaderboard</h2>
+            <div id="leaderboard-table"></div>
+            <button onclick="restartTest()">Start New Test</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 
