@@ -161,7 +161,7 @@ function endTest() {
     };
 
     // Send result to server
-    fetch('http://localhost:3000/api/save-result', {
+    fetch('/api/save-result', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -191,7 +191,7 @@ function endTest() {
 // Show leaderboard
 function showLeaderboard() {
     // Fetch results from server
-    fetch(`http://localhost:3000/api/tournament-results/${currentTournament}`)
+    fetch(`/api/tournament-results/${currentTournament}`)
         .then(response => response.json())
         .then(data => {
             if (!data || data.length === 0) {
